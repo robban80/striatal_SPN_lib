@@ -1,0 +1,98 @@
+{
+    "IV_505": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": -0.5528, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2025, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IV_509": {
+        "stimuli": [
+            {
+                "delay": 100.0, 
+                "amp": -0.2365, 
+                "duration": 1000.0, 
+                "totduration": 1400.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2025, 
+                "duration": 1400.0, 
+                "totduration": 1400.0
+            }
+        ]
+    }, 
+    "IDthresh-sub_547": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.3916, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2025, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_549": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.4155, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2025, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_550": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.4271, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2025, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }, 
+    "IDthresh_560": {
+        "stimuli": [
+            {
+                "delay": 700.0, 
+                "amp": 0.5453, 
+                "duration": 2000.0, 
+                "totduration": 3000.0
+            }, 
+            {
+                "delay": 0.0, 
+                "amp": 0.2025, 
+                "duration": 3000.0, 
+                "totduration": 3000.0
+            }
+        ]
+    }
+}
