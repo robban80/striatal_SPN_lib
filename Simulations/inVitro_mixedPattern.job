@@ -1,0 +1,17 @@
+#!/bin/bash -l
+#SBATCH -t 00:29:00
+#SBATCH -J netw.pattern
+#SBATCH -o o.netw%j
+#SBATCH -e e.netw%j
+#SBATCH --nodes=2
+##SBATCH --ntasks=40
+##SBATCH --ntasks-per-node=32
+#SBATCH -A 2019-3-644
+
+module sw PrgEnv-cray PrgEnv-intel
+module load neuron/7.5-py37
+
+# compile mod files? -> decomment
+nrnivmodl ../mechanisms/network
+
+srun -n 216 ../mechanisms/network/$CPU/special -c "{synaptic_strength=1500}" inVitro_mixedPattern.py
