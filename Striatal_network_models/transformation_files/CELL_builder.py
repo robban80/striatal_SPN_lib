@@ -100,6 +100,8 @@ class CELL:
         channel_lists   = { "axonal":[], "somatic":[], "basal":[] }
         
         with open(params) as file:
+            # OBS. hard coded to use first set of modulation parameters
+            # TODO update?
             paramList = json.load(file)[0]
         
         for p in paramList:

@@ -3,6 +3,9 @@
 The MSN class defining the cell
     updated based on MSN_builder in base of repo to handle network models (specifically
     different paramfile structure)
+
+the ffactor is used to rescale leak and capacitance when adding spines. 
+It is the reversed factors used in Du et al. 2017.
 '''
 
 from neuron import h
@@ -16,14 +19,14 @@ logger = logging.getLogger(__name__)
 FLOAT_FORMAT = '%.17g'
 
 # ======================= the MSN class ==================================================
-
 class CELL:
     def __init__(self,  params=None,
                         morphology=None,
                         mechanisms=None,
                         variables=None,
                         replace_axon=True,
-                        section=None
+                        N=40.0,
+                        ffactor=None
                         ):
         Import = h.Import3d_SWC_read()
         Import.input(morphology)
@@ -31,7 +34,7 @@ class CELL:
         imprt.instantiate(None)
         h.define_shape()
         
-        self._set_nsegs()
+        self._set_nsegs(N=N)
         self._create_sectionlists(replace_axon=replace_axon)
         self._read_param_file(params)
         
@@ -64,11 +67,17 @@ class CELL:
                 if not mechanisms or ('all' in mechLists and 'pas' in mechLists['all']):
                     sec.insert('pas')
                     sec.e_pas = self.par['section'][region]['e_pas']['value']
-                    sec.g_pas = self.par['section'][region]['g_pas']['value']
+                    if ffactor:
+                        sec.g_pas = self.par['section'][region]['g_pas']['value'] / ffactor
+                    else:
+                        sec.g_pas = self.par['section'][region]['g_pas']['value']
                     
                 # passive params (section params)---hard coded for now. TODO find better solution
                 sec.Ra = self.par['section'][region]['Ra']['value']
-                sec.cm = self.par['section'][region]['cm']['value']
+                if ffactor:
+                    sec.cm = self.par['section'][region]['cm']['value'] / ffactor
+                else:
+                    sec.cm = self.par['section'][region]['cm']['value']
                 sec.ena = self.par['section'][region]['ena']['value']
                 sec.ek = self.par['section'][region]['ek']['value']
                 
@@ -161,11 +170,15 @@ class CELL:
         
     
     
-    def _set_nsegs(self):
+    def _set_nsegs(self, N=40.0):
         """ def seg/sec """
         
         for sec in h.allsec():
-            sec.nseg = 2*int(sec.L/40.0)+1
+            if 'dend' in sec.name():
+                #print('inne', sec.name())
+                sec.nseg = 2*int(sec.L/N)+1
+            else:
+                sec.nseg = 1
             
     
     def _create_AIS(self):
@@ -225,131 +238,5 @@ class CELL:
         
         
 
-                           
-   
-
-class Spine():
-    """
-    Spine class. Create a spine with neck and head.
-    inspired by Mattioni and Le Novere, (2013).
-    https://senselab.med.yale.edu/ModelDB/ShowModel.cshtml?model=150284&file=/TimeScales-master/neuronControl/spine.py#tabs-2
-    
-    if a parent section is passed as argument, the spine will be connected to that section (using the default orientation)
-        to connect a spine at a later stage use the connect_spine(parent) method, where parent is a section.
-        
-    Since default orientation is used, to place multiple spines spread over one section, first use function split_section(sec) in common_functions.
-        split_section(sec) splits one section into multiple sections with retained total surface area (and close conductances).
-    """
-    #TODO: 
-    # -test spine (one and multiple): rheobase etc retained?
-    # -run in vivo with spines
-    
-    def __init__(self, id,              \
-                       neck_L=1.0,      \
-                       neck_dia=0.1,    \
-                       head_L=0.5,      \
-                       head_dia=0.5,    \
-                       Ra=150.0,        \
-                       Cm=1.0,          \
-                       parent=None      ):
-        """ Create a spine with geometry given by the arguments"""
-        
-        self.id         =   id
-        self.neck       =   self.create_neck(neck_L=neck_L, neck_dia=neck_dia, Ra=Ra, Cm=Cm)
-        self.head       =   self.create_head(head_L=head_L, head_dia=head_dia, Ra=Ra, Cm=Cm)
-        self.parent     =   parent  # the parent section connected to the neck
-        self.stim       =   None    # attribute for saving spike apparatus (netStim, synapse and
-        
-        self.connect_head2neck(parent)
-        
-    
-    def create_neck(self, neck_L=1.0, neck_dia=0.1, Ra=150.0, Cm=1.0):
-        """ Create a spine neck"""
-        
-        sec_name        =   'spine_%d_neck' % (self.id)
-        neck            =   h.Section(name=sec_name)
-        neck.nseg       =   1
-        neck.L          =   neck_L 
-        neck.diam       =   neck_dia
-        neck.Ra         =   Ra 
-        neck.cm         =   Cm
-        
-        for mech in [   'pas',      \
-                        'cav32',    \
-                        'cav33',    \
-                        'caldyn'     ]:
-            neck.insert(mech)
-        
-        neck(0.5).pbar_cav33 = 1e-7
-        neck(0.5).pbar_cav33 = 1e-8
-        
-        neck.g_pas      =   1.25e-5
-        neck.e_pas      =   -70 
-        
-        return neck
-        
-        
-        
-    def create_head(self, head_L=0.5, head_dia=0.5, Ra=150.0, Cm=1.0):
-        """Create the head of the spine and populate it with channels"""
-        
-        sec_name        =   'spine_%d_head' % (self.id)
-        head            =   h.Section(name=sec_name)
-        
-        head.nseg       =   1
-        head.L          =   head_L
-        head.diam       =   head_dia
-        head.Ra         =   Ra
-        head.cm         =   1.0
-        
-        for mech in [   'pas',      \
-                        'kir',      \
-                        'cav32',    \
-                        'cav33',    \
-                        'car',      \
-                        'cal12',    \
-                        'cal13',    \
-                        'cadyn',    \
-                        'caldyn'    ]:
-            head.insert(mech)
-        
-        head(0.5).pbar_cav32 = 1e-7
-        head(0.5).pbar_cav33 = 1e-8
-        head(0.5).pbar_car   = 1e-8
-        head(0.5).pbar_cal12 = 1e-7
-        head(0.5).pbar_cal13 = 1e-8
-        head(0.5).gbar_kir   = 1e-7
-        
-        head.g_pas      =   1.25e-5
-        head.e_pas      =   -70 
-        
-        return head
-        
-    
-    def connect_head2neck(self, parent=None):
-        ''' connect spine head to neck and if parent is not None connect spine to parent 
-        connection is hardcoded to use default connection orientation (0 end connected to 1 end on parent)
-        To use other orientation, first create and then connect spine, 
-            using the connect spine method with updated arguments
-        '''
-        self.head.connect(self.neck(1),0)
-        if not parent is None:
-            self.neck.connect(parent(1),0) 
-    
-    def connect_spine(self, parent, x=1, end=0):
-        ''' connect spine to parent sec.
-        '''
-        self.neck.connect(parent(x),end)
-        self.parent = parent
-    
-    def move_spine(self, new_parent):
-        ''' move spine from one section to another (using default orientation)
-        '''
-        h.disconnect(sec=self.neck)
-        self.neck.connect(new_parent(1),0)
-        self.parent = new_parent
-        
-           
-    
     
                     
