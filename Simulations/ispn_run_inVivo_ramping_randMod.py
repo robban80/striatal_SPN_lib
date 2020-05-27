@@ -21,6 +21,10 @@ h.load_file('import3d.hoc')
 pc = h.ParallelContext()
 id = int(pc.id())
 
+from mpi4py import MPI
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+
 # ----------------------------------------------------------------------------------------
 
 def run_model(cell_index, ci):
@@ -130,7 +134,7 @@ def run_model(cell_index, ci):
         
         
     # save
-    with open('inVivo_ramping_{}_{}_model{}.json'.format(conditions[cond_id],tag,cell_index), 'wt') as f:
+    with open('inVivo_ramping_{}_{}_model{}.json'.format(conditions[ci],tag,cell_index), 'wt') as f:
         json.dump(res,f,indent=4)
 
 
@@ -138,10 +142,8 @@ def run_model(cell_index, ci):
 if __name__ == "__main__":
     
     # select which model to use
-    cell_index  =   id%34
+    cell_index  =   rank%34
     cond_id     =   0 # ACh+DA
-    conditions  =   ['ACh+DA','ACh','DA','ctrl']
-    tag = np.random.randint(9999)
     
     run_model(cell_index, cond_id)
     
