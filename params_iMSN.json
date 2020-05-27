@@ -1,0 +1,19 @@
+{
+    "g_pas_all": 	    { "Value": " 1.25e-5 " },
+    "gbar_naf_somatic": { "Value": " 12 " },
+    "gbar_naf_basal": 	{ "Value": " 0.9 " },
+    "gbar_naf_axonal": 	{ "Value": " 9 " },
+    "gbar_kaf_somatic": { "Value": " 0.08 ", "Comment": " 0.15 in the dMSN "},
+    "gbar_kaf_basal": 	{ "Value": " 0.08 ", "Comment": " 0.11 in the dMSN " },
+    "gbar_kas_somatic": { "Value": " 0.016 " },
+    "gbar_kas_basal": 	{ "Value": " 0.012 ", "Comment": " increased factor 10 after reducing distribution by same factor "},
+    "gbar_kas_axonal": 	{ "Value": " 0.007 ", "Comment": " 0.005 "},
+    "gbar_kdr_somatic": { "Value": " 0.00094 " },
+    "gbar_kdr_basal": 	{ "Value": " 0.0007 " },
+    "gbar_kir_somatic": { "Value": " 0.0012 " },
+    "gbar_kir_basal": 	{ "Value": " 0.0012 ", "Comment": 0.0009},
+    "gbar_sk_somatic": 	{ "Value": " 0.00002 " },
+    "gbar_sk_basal": 	{ "Value": " 0.00002 ", "Comment": " both sk and bk are lower since [Ca]_i is higher in Alex latest version " },
+    "gbar_bk_somatic": 	{ "Value": " 0.00013 " },
+    "gbar_bk_basal": 	{ "Value": " 0.0001 " }
+}

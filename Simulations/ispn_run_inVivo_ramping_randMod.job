@@ -1,0 +1,17 @@
+#!/bin/bash -l
+#SBATCH -t 00:59:00
+#SBATCH -J ispn-rand-ramp
+#SBATCH -o o.inh%j
+#SBATCH -e e.inh%j
+#SBATCH --nodes=5
+##SBATCH --ntasks=160
+##SBATCH --ntasks-per-node=32
+#SBATCH -A 2019-3-644
+
+module sw PrgEnv-cray PrgEnv-intel
+module load neuron/7.5-py37
+
+# compile mod files? -> decomment
+#nrnivmodl ../mechanisms_play_modulation
+
+srun -n 160 $CPU/special -c "{synaptic_strength=1500}" ispn_run_inVivo_ramping_randMod.py
