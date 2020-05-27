@@ -41,6 +41,10 @@ cells_dirs =    {
 pc = h.ParallelContext()
 id = int(pc.id())
 
+from mpi4py import MPI
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+
 # import matplotlib.pyplot as plt
 
 def write2file(text):

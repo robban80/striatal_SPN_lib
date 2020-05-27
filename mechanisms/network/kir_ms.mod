@@ -4,7 +4,10 @@ COMMENT
 
 neuromodulation is added as functions:
     
-    modulation = 1 + damod*(maxMod-1)*level
+    modulation = 1 + damod * ( (maxMod-1)*level + (max2-1)*lev2 ) 
+    if (modulation < 0) {
+        modulation = 0
+    }
 
 where:
     
@@ -24,7 +27,7 @@ NEURON {
     SUFFIX kir_ms
     USEION k READ ek WRITE ik
     RANGE gbar, gk, ik, shift
-    RANGE damod, maxMod, level
+    RANGE damod, maxMod, level, max2, lev2
 }
 
 UNITS {
@@ -40,6 +43,8 @@ PARAMETER {
     damod = 0
     maxMod = 1
     level = 0
+    max2 = 1
+    lev2 = 0
 }
 
 ASSIGNED {
@@ -79,7 +84,10 @@ PROCEDURE rates() {
 FUNCTION modulation() {
     : returns modulation factor
     
-    modulation = 1 + damod*(maxMod-1)*level 
+    modulation = 1 + damod * ( (maxMod-1)*level + (max2-1)*lev2 ) 
+    if (modulation < 0) {
+        modulation = 0
+    } 
 }
 
 COMMENT

@@ -34,7 +34,7 @@ NEURON {
     SUFFIX cal12_ms
     USEION cal READ cali, calo WRITE ical VALENCE 2
     RANGE pbar, ical
-    RANGE damod, maxMod, level
+    RANGE damod, maxMod, level, max2, lev2
 }
 
 PARAMETER {
@@ -45,6 +45,8 @@ PARAMETER {
     damod = 0
     maxMod = 1
     level = 0
+    max2 = 1
+    lev2 = 0
 } 
 
 ASSIGNED { 
@@ -108,7 +110,10 @@ FUNCTION efun(z) {
 FUNCTION modulation() {
     : returns modulation factor
     
-    modulation = 1 + damod*(maxMod-1)*level 
+    modulation = 1 + damod * ( (maxMod-1)*level + (max2-1)*lev2 ) 
+    if (modulation < 0) {
+        modulation = 0
+    } 
 }
 
 
