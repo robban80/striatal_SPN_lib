@@ -1031,12 +1031,18 @@ def find_example_traces_ispn():
     flag = 0
     
     #files = glob.glob('Results/*_ACh+DA_*model[!0]*.json')
-    files = glob.glob('Results/*_redNaf*.json')
+    #files = glob.glob('Results/*_redNaf*.json')
+    #files = glob.glob('Results/*_incNMDA*.json')
+    files = glob.glob('Results/*_ctrl*.json')
     fig,ax = plt.subplots(1,3, figsize=(12,4))
     for f in files:
         #f = 'Results/inVivo_ramping_{}_model{}.json'.format(c,mid)
-        with open(f, 'r') as handle:
-            data = json.load(handle)
+        try:
+            with open(f, 'r') as handle:
+                data = json.load(handle)
+            print(f)
+        except:
+            continue
         
         #print(f)
         tremove = 1000
@@ -1053,19 +1059,21 @@ def find_example_traces_ispn():
                     count[0] += 1
                 elif f4a.check_sliding_average_lowSampleData(trace, threshold=-37):
                     # check for complex spikes.
-                    ax[2].plot(time, trace, c=colors[c], alpha=alpha)
-                    s = "'mod':{}, 'fach':{}, 'fda':{}, 'bg':{}".format(mid,i,j,bg)
+                    ax[2].plot(time, trace, alpha=alpha)
+                    plt.plot(time, trace, alpha=alpha)
+                    plt.show()
+                    s = "'mod':{}, 'bg':{}".format(i,bg)
                     print('{'+s+'},')
                     count[2] += 1
                     flag=1
                 else:
                     ax[1].plot(time, trace, alpha=alpha)
                     count[1] += 1
-    plt.show()
-                
+    
+    print(count)            
     for i in range(3):
         ax[i].set_xlabel(count[i])
-    if flag:
+    if True:
         plt.show()
     else:
         plt.close('all')
