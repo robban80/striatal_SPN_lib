@@ -1027,15 +1027,22 @@ def find_example_traces_ispn():
     alpha = 0.5
     
     count = {2:0, 1:0, 0:0}
+    fnafs = {2:[], 1:[], 0:[]}
+    modelf = {0:[], 1:[], 2:[], 3:[]}
     
     flag = 0
     
-    #files = glob.glob('Results/*_ACh+DA_*model[!0]*.json')
-    #files = glob.glob('Results/*_redNaf*.json')
-    #files = glob.glob('Results/*_incNMDA*.json')
-    #files = glob.glob('Results/*_ctrl*.json')
-    files = glob.glob('Results/*_NMDAinc*.json')
+    #files = glob.glob('Results/inVivo*_ACh+DA_*model[!0]*.json')
+    #files = glob.glob('Results/inVivo*_redNaf*.json')
+    #files = glob.glob('Results/inVivo*_incNMDA*.json')
+    #files = glob.glob('Results/inVivo*_ctrl*.json')
+    #files = glob.glob('Results/netw*2500*.json')
+    #files = glob.glob('Results/netw*rampingNafNMDA*.json')
+    #files = glob.glob('Results/netw*rampingNMDA_*.json')
+    files = glob.glob('Results/netw*rampingNaf_*.json')
+    #files = glob.glob('Results/netw*_ctrl_*.json')
     fig,ax = plt.subplots(1,3, figsize=(12,4))
+    f2,a2 = plt.subplots(1,1)
     for f in files:
         #f = 'Results/inVivo_ramping_{}_model{}.json'.format(c,mid)
         try:
@@ -1045,35 +1052,80 @@ def find_example_traces_ispn():
             print(f)
             continue
         
-        #print(f)
         tremove = 1000
-        time = data['time'] #[t-1000 for t in data['time'] if t > tremove]
-        # da fid: ach fid: condition: bg id
+        time = [t-1000 for t in data['time'] if t > tremove]
+        
+        color = ['b', 'g', 'r', 'y']
+        
         for i in data:
             if i == 'time': continue
-            for bg in data[str(i)]:
-                #print(data[i].keys())
-                trace = data[i][str(bg)] #[data[str(i)]['0'][str(bg)][ind] for ind,t in enumerate(data['time']) if t > tremove]
+            fnaf  = data[i]['par']['factors']['ach']['intr']['naf_ms']
+            for bg in data[i]:
+                if bg == 'par': continue
                 
-                if max(trace) < -10:
-                    ax[0].plot(time, trace, alpha=alpha)
+                trace = [data[i][str(bg)][ind] for ind,t in enumerate(data['time']) if t > tremove]
+                
+                if max(trace) < -35:
+                    #ax[0].plot(time, trace, alpha=alpha)
                     count[0] += 1
+                    fnafs[0].append(fnaf)
                 elif f4a.check_sliding_average_lowSampleData(trace, threshold=-37):
                     # check for complex spikes.
-                    ax[2].plot(time, trace, alpha=alpha)
+                    modelID = int(f.split('model')[1].split('.')[0])
+                    ax[2].plot(time, trace, alpha=alpha, color=color[modelID])
+                    '''
+                    plt.figure()
                     plt.plot(time, trace, alpha=alpha)
+                    plt.title(modelID)
                     plt.show()
+                    '''
+                    modelf[modelID].append(fnaf)
+                    
                     s = "'mod':{}, 'bg':{}".format(i,bg)
-                    print('{'+s+'},')
+                    #print('{'+s+'},')
                     count[2] += 1
                     flag=1
+                    fnafs[2].append(fnaf)
+                    if fnaf > 0.94:
+                        a2.plot(time, trace)
                 else:
-                    ax[1].plot(time, trace, alpha=alpha)
+                    #ax[1].plot(time, trace, alpha=alpha)
                     count[1] += 1
+                    fnafs[1].append(fnaf)
     
-    print(count)            
+    print(count)
+    f,a = plt.subplots(1,1) 
+               
     for i in range(3):
         ax[i].set_xlabel(count[i])
+        a.hist(     fnafs[i], 
+                    range=(0.7,1.2), 
+                    bins=20, 
+                    color=color[i],
+                    histtype='stepfilled',
+                    alpha=0.5)
+    for i in range(3):
+        a.hist(     fnafs[i], 
+                    range=(0.7,1.2), 
+                    bins=20, 
+                    color=color[i],
+                    histtype='step')
+    
+    f3,a3 = plt.subplots(1,1) 
+    for i in range(4):
+        a3.hist(    modelf[i], 
+                    range=(0.7,1.2), 
+                    bins=20, 
+                    color=color[i],
+                    histtype='stepfilled',
+                    alpha=0.5)
+    for i in range(4):
+        a3.hist(    modelf[i], 
+                    range=(0.7,1.2), 
+                    bins=20, 
+                    color=color[i],
+                    histtype='step')
+    
     if True:
         plt.show()
     else:

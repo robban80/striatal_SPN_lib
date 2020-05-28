@@ -62,6 +62,7 @@ def run_model(cell_index, ci):
     
     # result dict
     res = {}
+    tag = np.random.randint(9999)
     
     for i in range(20):
         res[i] = {}
@@ -133,9 +134,9 @@ def run_model(cell_index, ci):
             res[i][bg] = [vm[ind]   for ind,t in enumerate(tm) if ind%4 == 0]
         
         
-    # save
-    with open('inVivo_ramping_{}_{}_model{}.json'.format(conditions[ci],tag,cell_index), 'wt') as f:
-        json.dump(res,f,indent=4)
+        # save
+        with open('inVivo_ramping_{}_{}_model{}.json'.format(conditions[ci],tag,cell_index), 'wt') as f:
+            json.dump(res,f,indent=4)
 
 
 # if run from terminal...   ===============================================================

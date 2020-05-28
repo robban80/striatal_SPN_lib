@@ -52,6 +52,59 @@ def write2file(text):
         print(text, file=text_file)
 
 
+def draw_random_factor(ct):
+    if ct == 'ispn':
+        modulation_DA = {'intr':   {'naf_ms': np.random.uniform(0.95,1.1),
+                                    'kaf_ms': np.random.uniform(1.0,1.1),
+                                    'kas_ms': np.random.uniform(1.0,1.1),
+                                    'kir_ms': np.random.uniform(0.8,1.0),
+                                    'can_ms': np.random.uniform(0.9,1.0),
+                                    'car_ms': np.random.uniform(0.6,0.8),
+                                    'cal12_ms': np.random.uniform(0.7,0.8),
+                                    'cal13_ms': np.random.uniform(0.7,0.8)
+                                    },
+                         'syn':    {'NMDA':np.random.uniform(0.85,1.05), 
+                                    'AMPA':np.random.uniform(0.7,0.9), 
+                                    'GABA':np.random.uniform(0.90,1.1)}
+                                    }
+        modulation_ACh = {'intr':   {'naf_ms': np.random.uniform(1.0,1.2),
+                                    'kir_ms': np.random.uniform(0.5,0.7),
+                                    'can_ms': np.random.uniform(0.65,0.85),
+                                    'cal12_ms': np.random.uniform(0.3,0.7),
+                                    'cal13_ms': np.random.uniform(0.3,0.7)
+                                    },
+                         'syn':    {'NMDA':np.random.uniform(1.0,1.05), 
+                                    'AMPA':np.random.uniform(0.99,1.01), 
+                                    'GABA':np.random.uniform(0.99,1.01)} 
+                                    }    
+    elif ct == 'dspn':
+        modulation_DA = {'intr':   {'naf_ms': np.random.uniform(0.6,0.8),
+                                    'kaf_ms': np.random.uniform(0.75,0.85),
+                                    'kas_ms': np.random.uniform(0.65,0.85),
+                                    'kir_ms': np.random.uniform(0.85,1.25),
+                                    'can_ms': np.random.uniform(0.2,1.0),
+                                    'cal12_ms': np.random.uniform(1.0,2.0),
+                                    'cal13_ms': np.random.uniform(1.0,2.0)
+                                    },
+                         'syn':    {'NMDA':np.random.uniform(1.2,1.4), 
+                                    'AMPA':np.random.uniform(1.0,1.3), 
+                                    'GABA':np.random.uniform(0.80,1.2)}
+                                    }
+        modulation_ACh = {'intr':   {'naf_ms': np.random.uniform(1.0,1.2),
+                                    'kir_ms': np.random.uniform(0.8,1.0),
+                                    'can_ms': np.random.uniform(0.65,0.85),
+                                    'cal12_ms': np.random.uniform(0.3,0.7),
+                                    'cal13_ms': np.random.uniform(0.3,0.7)
+                                    },
+                         'syn':    {'NMDA':np.random.uniform(1.0,1.05), 
+                                    'AMPA':np.random.uniform(0.99,1.01), 
+                                    'GABA':np.random.uniform(0.99,1.01)} 
+                                    }    
+    else:
+        raise('modulation factors for type: {}'.format(ct))
+    
+    return modulation_DA, modulation_ACh
+
 def run_model(  cell_type=None,
                 mdl_ID=0,
                 ci=0         ): 
@@ -79,6 +132,18 @@ def run_model(  cell_type=None,
     conditions  = ['ACh+DA','ACh','DA','ctrl']
     c           = conditions[ci]
     
+    # set current injection
+    with open(protocols) as file:
+        prot = json.load(file)
+    
+    # select first spiking prot
+    key    = sorted(prot.keys())[0]
+    st     = prot[key]['stimuli'][1]
+    stim   =   h.IClamp(0.5, sec=cell.soma)
+    stim.amp    =   st['amp']
+    stim.delay  =   0
+    stim.dur    =   tstop
+    
     
     # record vectors
     tm  = h.Vector()
@@ -93,33 +158,13 @@ def run_model(  cell_type=None,
     # result dict
     res = {}
     today = date.today() 
+    tag = np.random.randint(9999)
     
     for i in range(20):
         res[i] = {}
-        # draw random factors
-        modulation_DA = {'intr':   {'naf_ms': np.random.uniform(0.95,1.1),
-                                    'kaf_ms': np.random.uniform(1.0,1.1),
-                                    'kas_ms': np.random.uniform(1.0,1.1),
-                                    'kir_ms': np.random.uniform(0.8,1.0),
-                                    'can_ms': np.random.uniform(0.9,1.0),
-                                    'car_ms': np.random.uniform(0.6,0.8),
-                                    'cal12_ms': np.random.uniform(0.7,0.8),
-                                    'cal13_ms': np.random.uniform(0.7,0.8)
-                                    },
-                         'syn':    {'NMDA':np.random.uniform(0.85,1.05), 
-                                    'AMPA':np.random.uniform(0.7,0.9), 
-                                    'GABA':np.random.uniform(0.90,1.1)}
-                                    }
-        modulation_ACh = {'intr':   {'naf_ms': np.random.uniform(1.0,1.2),
-                                    'kir_ms': np.random.uniform(0.5,0.7),
-                                    'can_ms': np.random.uniform(0.65,0.85),
-                                    'cal12_ms': np.random.uniform(0.3,0.7),
-                                    'cal13_ms': np.random.uniform(0.3,0.7)
-                                    },
-                         'syn':    {'NMDA':np.random.uniform(1.0,1.05), 
-                                    'AMPA':np.random.uniform(0.99,1.01), 
-                                    'GABA':np.random.uniform(0.99,1.01)} 
-                                    }
+        
+        # draw random factors # TODO add Im to models and ACh modulation
+        modulation_DA, modulation_ACh = draw_random_factor(cell_type)
         
         res[i][ci] = {'factors':{'da': modulation_DA, 'ach': modulation_ACh, 'date':today.strftime("%b-%d-%Y") }  }
     
@@ -165,10 +210,9 @@ def run_model(  cell_type=None,
                 res['time'] = [t for ind,t in enumerate(tm) if ind%4 == 0]
             res[i][bg] = [vm[ind]   for ind,t in enumerate(tm) if ind%4 == 0]
         
-        
-    # save
-    with open('netw_ispn_ramping_{}_{}_model{}.json'.format(conditions[ci],tag,cell_index), 'wt') as f:
-        json.dump(res,f,indent=4)
+        # save
+        with open('netw_{}_ramping_{}_{}_model{}.json'.format(cell_type, conditions[ci],tag,mdl_ID), 'wt') as f:
+            json.dump(res,f,indent=4)
      
          
         
@@ -177,7 +221,7 @@ def run_model(  cell_type=None,
 if __name__ == "__main__":
     
     # select which model to use
-    cell_type   = 'ispn' # ['dspn','ispn']
+    cell_type   = 'dspn' # ['dspn','ispn']
     mdl_ID      = rank%4
     # modulation paradigm (0-3; ACh+DA, ACh, DA, ctrl)
     ci          =   0 # ? int(np.floor(id/40))
