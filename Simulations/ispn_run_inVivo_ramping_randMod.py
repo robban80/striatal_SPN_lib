@@ -59,12 +59,13 @@ def run_model(cell_index, ci):
     # transient to play
     transient = h.Vector([use.alpha(ht, modOnTime, 1, tau) if ht >= modOnTime else 0 for ht in np.arange(0,tstop,h.dt)])
     
+    tag = np.random.randint(99999)
     
     # result dict
     res = {}
     
     for i in range(20):
-        res[i] = {}
+        
         # draw random factors
         modulation_DA = {'intr':   {'naf': np.random.uniform(0.95,1.1),
                                     'kaf': np.random.uniform(1.0,1.1),
@@ -91,7 +92,7 @@ def run_model(cell_index, ci):
                                     'GABA':np.random.uniform(0.99,1.01)} 
                                     }
         
-        res[i][ci] = {'factors':{'da': modulation_DA, 'ach': modulation_ACh }  }
+        res[i] = {'par':{ 'factors':{'da': modulation_DA, 'ach': modulation_ACh }, 'cond':c }}
     
         # ACh factor sets used == 0 and 2 (since giving less inward rectification and higher excitability)
         V = {}
@@ -110,16 +111,18 @@ def run_model(cell_index, ci):
         Syn, nc, ns         = use.set_bg_noise( cell, fglut=12.0, fgaba=fgaba)
         
         # Clean
-        DA = modulate.DA(   cell, modulation_DA['intr'],
-                            modulation='uniform',
-                            play=V,
-                            syn_dict = modulation_DA['syn']
-                            )
-        ACh = modulate.ACh( cell, modulation_ACh['intr'],
-                            shift_kaf=0,
-                            play=V,
-                            syn_dict = modulation_ACh['syn']
-                            )
+        if 'DA' in c:
+            DA = modulate.DA(   cell, modulation_DA['intr'],
+                                modulation='uniform',
+                                play=V,
+                                syn_dict = modulation_DA['syn']
+                                )
+        if 'ACh' in c:
+            ACh = modulate.ACh( cell, modulation_ACh['intr'],
+                                shift_kaf=0,
+                                play=V,
+                                syn_dict = modulation_ACh['syn']
+                                )
         
         for bg in range(nbg):    
             print(cell_index, c, bg)
@@ -133,9 +136,9 @@ def run_model(cell_index, ci):
             res[i][bg] = [vm[ind]   for ind,t in enumerate(tm) if ind%4 == 0]
         
         
-    # save
-    with open('inVivo_ramping_{}_{}_model{}.json'.format(conditions[ci],tag,cell_index), 'wt') as f:
-        json.dump(res,f,indent=4)
+        # save
+        with open('inVivo_ramping_{}_{}_model{}.json'.format(conditions[ci],tag,cell_index), 'wt') as f:
+            json.dump(res,f,indent=4)
 
 
 # if run from terminal...   ===============================================================
