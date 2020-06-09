@@ -44,7 +44,7 @@ def run_model(cell_index, ci):
 
     parameters      =   model_sets[cell_index]['variables'] 
     par             =   '../params_iMSN.json'
-    morphology      =   '../Morphologies/WT-dMSN_P270-20_1.02_SGA1-m24.swc'
+    morphology      =   '../Morphologies/WT-iMSN_P270-09_1.01_SGA2-m1.swc
 
     cell = build.MSN(  params=par,                  \
                        morphology=morphology,       \
