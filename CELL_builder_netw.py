@@ -16,6 +16,7 @@ from math import exp
 import logging
 logger = logging.getLogger(__name__)
 
+# TODO: is this used? remove?
 FLOAT_FORMAT = '%.17g'
 
 # ======================= the MSN class ==================================================
@@ -59,6 +60,14 @@ class CELL:
             if mechanisms:              cl = mechLists[region]
             elif region == 'axonal':    cl = self.channel_lists[region]
             else:                       cl = self.channel_lists[region]+["cadyn_ms", "caldyn_ms"]
+            
+            # insert Im. not in original network models 
+            # TODO: set selectively using argument
+            if region == 'axonal':
+                for sec in seclist:
+                    sec.insert('Im')
+                    for seg in sec:
+                        seg.gbar_Im = 1.0e-3
             
             for sec in seclist:
                 for mech in cl:

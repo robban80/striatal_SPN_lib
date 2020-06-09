@@ -161,12 +161,11 @@ def run_model(  cell_type=None,
     tag = np.random.randint(9999)
     
     for i in range(20):
-        res[i] = {}
-        
+    
         # draw random factors # TODO add Im to models and ACh modulation
         modulation_DA, modulation_ACh = draw_random_factor(cell_type)
         
-        res[i][ci] = {'factors':{'da': modulation_DA, 'ach': modulation_ACh, 'date':today.strftime("%b-%d-%Y") }  }
+        res[i] = {'par': {'factors':{'da': modulation_DA, 'ach': modulation_ACh}, 'date':today.strftime("%b-%d-%Y"), 'cond':c }  }
     
         # ACh factor sets used == 0 and 2 (since giving less inward rectification and higher excitability)
         V = {}

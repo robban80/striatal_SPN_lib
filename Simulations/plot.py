@@ -1028,19 +1028,21 @@ def find_example_traces_ispn():
     
     count = {2:0, 1:0, 0:0}
     fnafs = {2:[], 1:[], 0:[]}
+    fnaf2 = {2:[], 1:[], 0:[]}
     modelf = {0:[], 1:[], 2:[], 3:[]}
     
     flag = 0
-    
+    ct = 'dspn'
     #files = glob.glob('Results/inVivo*_ACh+DA_*model[!0]*.json')
     #files = glob.glob('Results/inVivo*_redNaf*.json')
     #files = glob.glob('Results/inVivo*_incNMDA*.json')
     #files = glob.glob('Results/inVivo*_ctrl*.json')
-    #files = glob.glob('Results/netw*2500*.json')
-    #files = glob.glob('Results/netw*rampingNafNMDA*.json')
-    #files = glob.glob('Results/netw*rampingNMDA_*.json')
-    files = glob.glob('Results/netw*rampingNaf_*.json')
-    #files = glob.glob('Results/netw*_ctrl_*.json')
+    #files = glob.glob('Results/netw_{}_ramping2500*.json'.format(ct))
+    #files = glob.glob('Results/netw_{}_rampingNafNMDA*.json'.format(ct))
+    #files = glob.glob('Results/netw_{}_rampingNMDA_*.json'.format(ct))
+    #files = glob.glob('Results/netw_{}_rampingNaf_*.json'.format(ct))
+    files = glob.glob('Results/netw_{}_rampingIm_ctrl_*.json'.format(ct))
+    #files = glob.glob('Results/netw_{}*_ACh+DA_*.json'.format(ct))
     fig,ax = plt.subplots(1,3, figsize=(12,4))
     f2,a2 = plt.subplots(1,1)
     for f in files:
@@ -1059,20 +1061,29 @@ def find_example_traces_ispn():
         
         for i in data:
             if i == 'time': continue
-            fnaf  = data[i]['par']['factors']['ach']['intr']['naf_ms']
+            
+            if 'par' not in data[i] or data[i]['par']['cond'] == 'ctrl':
+                fnaf = 1
+            else:
+                fnaf  = data[i]['par']['factors']['ach']['intr']['naf_ms']
+                naf2  = data[i]['par']['factors']['da' ]['intr']['naf_ms']
+                if data[i]['par']['cond'] == 'DA':
+                    fnaf = naf2
+                elif data[i]['par']['cond'] == 'ACh+DA':
+                    fnaf = (fnaf + naf2) / 2
             for bg in data[i]:
                 if bg == 'par': continue
                 
                 trace = [data[i][str(bg)][ind] for ind,t in enumerate(data['time']) if t > tremove]
                 
                 if max(trace) < -35:
-                    #ax[0].plot(time, trace, alpha=alpha)
+                    ax[0].plot(time, trace, alpha=alpha)
                     count[0] += 1
                     fnafs[0].append(fnaf)
                 elif f4a.check_sliding_average_lowSampleData(trace, threshold=-37):
                     # check for complex spikes.
                     modelID = int(f.split('model')[1].split('.')[0])
-                    ax[2].plot(time, trace, alpha=alpha, color=color[modelID])
+                    ax[2].plot(time, trace, alpha=alpha)
                     '''
                     plt.figure()
                     plt.plot(time, trace, alpha=alpha)
@@ -1087,14 +1098,24 @@ def find_example_traces_ispn():
                     flag=1
                     fnafs[2].append(fnaf)
                     if fnaf > 0.94:
-                        a2.plot(time, trace)
+                        a2.plot(time, trace, color=color[modelID])
                 else:
-                    #ax[1].plot(time, trace, alpha=alpha)
+                    ax[1].plot(time, trace, alpha=alpha)
                     count[1] += 1
                     fnafs[1].append(fnaf)
     
     print(count)
+    plt.close('all')
+    
     f,a = plt.subplots(1,1) 
+    
+    x, bins, p = a.hist(     fnafs[0]+fnafs[1]+fnafs[2], 
+                range=(0.7,1.2), 
+                bins=20, 
+                color='k',
+                density=0,
+                lw=2,
+                histtype='step')
                
     for i in range(3):
         ax[i].set_xlabel(count[i])
@@ -1103,12 +1124,14 @@ def find_example_traces_ispn():
                     bins=20, 
                     color=color[i],
                     histtype='stepfilled',
+                    density=0,
                     alpha=0.5)
     for i in range(3):
         a.hist(     fnafs[i], 
                     range=(0.7,1.2), 
                     bins=20, 
                     color=color[i],
+                    density=0,
                     histtype='step')
     
     f3,a3 = plt.subplots(1,1) 
