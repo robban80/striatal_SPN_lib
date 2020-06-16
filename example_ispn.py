@@ -18,13 +18,13 @@ h.load_file('import3d.hoc')
 
 
 # open channel distribution parameter library    
-with open('Libraries/D2_34bestFit.pkl', 'rb') as f:
+with open('Libraries/D2_34bestFit_updRheob.pkl', 'rb') as f:
     model_sets = pickle.load(f, encoding="latin1") 
 
 
 # basic parameters and morphology
 par         =   './params_iMSN.json'
-morphology  =   'Morphologies/WT-dMSN_P270-20_1.02_SGA1-m24.swc'
+morphology  =   './Morphologies/WT-iMSN_P270-09_1.01_SGA2-m1.swc'
 
 for cell_index in range(34):
     

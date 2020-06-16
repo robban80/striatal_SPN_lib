@@ -1,48 +1,17 @@
 # Original file WT-P270-09-14ak.swc modified -> WT-iMSN_P270-09_1.01_SGA2-m1.swc
-# Back to sperical soma since the extra points were not recongnized as part of the first
-# somatic segment (creating extra surface area).
-# diameter of soma updated to 12.2 since that is reported as the mean diameter of
-# MSNs of the matrix compartment (Reinius et al., 2015. 
-# Conditional targeting of medium spiny neurons in the striatal matrix).
-# A Scale factor in the MSN_builder is then mapping conductances to the old surface area; 
-#      SF = Aold / Anew.
-# axon updated with one additional point to retain len of 60 um (first point is 
-# interpretted as boundary of soma and is not included in the len calculations.
 #
-# Original file WT-P270-20-13ak.swc modified.
-# Back to 3-point soma, by adding two points at the end of the file, to have same 
-# structure as the morphology used in Lindroos et al., 2018 
-# (see latest_WT-P270-20-14ak.swc). Also axon replaced with two nodes AIS following same
-# paper.
-# soma points:
-# 3001 1 0 0   5.6 5.6  1
-# 3002 1 0 0  12.2 5.6  3001
-# AIS:
-# 4001 2 0 30 12.2 0.5  3002
-# 4002 2 0 60 12.2 0.5  4001
-#
-# Original file WT-P270-09-13ak.swc modified.
-# Three-point soma replaced with single point, nodes renumbered.
-#
-# Morphology centered at root.
-# Three-point soma with effective diameter 11.2 um is used (equiv to 4-point soma in WT-P270-20.CNG.swc).
-# Axon from cortical basket cell BE79B.CNG.swc is inserted, rotated randomly.
-# No scaling applied.
+# soma diam reset and AIS added
 #
 # Original file WT-P270-20-4ak.swc modified.
 # Dendritic diameters redefined.
 #
 # Original file WT-P270-20-1ak.swc modified.
-# Three somatic points are used.
+# 1 somatic point is used 
+# (with diameter of 12.2 um following Reinius et al., 2015. frontiers, fig S5)
 #
 # Original file WT-P270-20.CNG.swc modified.
-# Scale: 1.31578947368 1.31578947368 1.71052631579
-# Scale diam: 1.05263157895
-#   contraction correction: 1.31578947368
-#   scaling: [1.0, 1.0, 1.3, 0.8]
-# Width: 273.092105263 [-109.14473684210527, 163.94736842105263]
-# Height: 278.592105263 [-147.64473684210526, 130.94736842105263]
-# Depth: 213.302631579 [-88.17763157894737, 125.12500000000001]
+# contraction correction:
+# Scale: 1.234567 1.234567 1.72839565217
 #
 # Original file WT-P270-20.swc edited using StdSwc version 1.31 on 8/27/12.
 # Irregularities and fixes documented in WT-P270-20.swc.std.  See StdSwc1.31.doc for more information.
