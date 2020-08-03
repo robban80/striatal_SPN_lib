@@ -18,15 +18,18 @@ h.load_file('import3d.hoc')
 
 
 # open channel distribution parameter library    
-with open('Libraries/D2_34bestFit.pkl', 'rb') as f:
+with open('Libraries/D2_34bestFit_updRheob.pkl', 'rb') as f:
     model_sets = pickle.load(f, encoding="latin1") 
 
 
 # basic parameters and morphology
 par         =   './params_iMSN.json'
-morphology  =   'Morphologies/WT-dMSN_P270-20_1.02_SGA1-m24.swc'
+morphology  =   './Morphologies/WT-iMSN_P270-09_1.01_SGA2-m1.swc'
 
-for cell_index in range(34):
+# chose model(s) here. 
+#-----------------------------------------
+OUT = {}
+for cell_index in [0]: # range(34)
     
     parameters      =   model_sets[cell_index]['variables'] 
     rheobase        =   model_sets[cell_index]['rheobase']
@@ -41,7 +44,7 @@ for cell_index in range(34):
     Istim           = h.IClamp(0.5, sec=cell.soma)
     Istim.delay     =   100
     Istim.dur       =   1000
-    Istim.amp       =   (rheobase+60) *1e-3
+    Istim.amp       =   rheobase *1e-3
     
     # record vectors
     tm  = h.Vector()
@@ -56,9 +59,13 @@ for cell_index in range(34):
     while h.t < 1000:
         h.fadvance()
     
-    plt.plot(tm,vm)
-    plt.title('model v: %d; rheobase: %d' % (cell_index, rheobase))
+    OUT[cell_index] = {'tm':tm.to_python(), 'vm':vm.to_python, 'rheo':rheobase}
+    
+for cell_index in OUT:       
+    plt.plot(OUT[cell_index]['tm'],OUT[cell_index]['vm'], label='{}-{}'.format(cell_index,rheobase))
+    #plt.title('model v: %d; rheobase: %d' % (cell_index, rheobase))
     #plt.savefig('model_%02d.png' %(cell_index), format='png')
-    plt.show()
+plt.legend()
+plt.show()
         
 

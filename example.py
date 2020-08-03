@@ -1,5 +1,5 @@
 
-# example script for showing how to use the model library
+# script illustrating the use the model library (dspn)
 
 
 from   neuron           import h
@@ -26,7 +26,11 @@ with open('Libraries/D1_71bestFit.pkl', 'rb') as f:
 par         =   './params_dMSN.json'
 morphology  =   'morphologies/WT-dMSN_P270-20_1.02_SGA1-m24.swc'
 
-for cell_index in [2,70]:#range(71):
+
+# chose model(s) here. 
+#-----------------------------------------
+OUT = {}
+for cell_index in [2]:#range(71):
     
     parameters      =   model_sets[cell_index]['variables'] 
     rheobase        =   model_sets[cell_index]['rheobase']
@@ -62,9 +66,14 @@ for cell_index in [2,70]:#range(71):
     while h.t < 1000:
         h.fadvance()
     
-    plt.plot(tm,vm)
-    plt.title('model v: %d; rheobase: %d' % (cell_index, rheobase))
+    OUT[cell_index] = {'tm':tm.to_python(), 'vm':vm.to_python, 'rheo':rheobase}
+    
+
+for cell_index in OUT:       
+    plt.plot(OUT[cell_index]['tm'],OUT[cell_index]['vm'], label='%-%'.format(cell_index,rheobase))
+    #plt.title('model v: %d; rheobase: %d' % (cell_index, rheobase))
     #plt.savefig('model_%02d.png' %(cell_index), format='png')
-    plt.show()
+plt.legend()
+plt.show()
         
 
