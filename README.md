@@ -1,4 +1,4 @@
-# striatal_dSPN_lib
+# striatal_SPN_lib
 
 This repository contains a library of striatal projection neurons.
 
@@ -8,5 +8,7 @@ Lindroos and Hellgren Kotaleski 2020.
 Predicting complex spikes in striatal projection neurons of the direct pathway 
 following neuromodulation by acetylcholine and dopamine. EJN
 
-Some code for analysis and figure creation is also included.
+Code for analysis and figure creation is also included.
+
+How to run the models
 ------------------------------------------------------------------------------
