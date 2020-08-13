@@ -35,7 +35,7 @@ specs = {'dspn': {
 # chose cell type ('ispn' or 'dspn') and model id(s) to simulate
 #---------------------------------------------------------------
 cell_type         = 'dspn'    # 'dspn'/'ispn'
-model_iterator    = range(5)  # range(specs[cell]['N']) gives all models
+model_iterator    = range(5)  # range(specs[cell_type]['N']) gives all models
 
 
 
