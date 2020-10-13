@@ -1,12 +1,18 @@
 
 # example script for showing how to use the model library
 
+'''
+select models to simulate below (mdls). 
+    By default the five first will be simulated with a current injection
+    of rheobase + random(0-60) pA
+'''
+
 
 from   neuron           import h
 import MSN_builder          as build
-import common_functions     as fun
 import pickle
 import matplotlib.pyplot    as plt
+import numpy                as np
 
 # Load model mechanisms
 import neuron               as nrn
@@ -26,7 +32,11 @@ with open('Libraries/D2_34bestFit_updRheob.pkl', 'rb') as f:
 par         =   './params_iMSN.json'
 morphology  =   './Morphologies/WT-iMSN_P270-09_1.01_SGA2-m1.swc'
 
-for cell_index in range(34):
+# select model index here (use range or a list, e.g. [0,1,4,20] or [0])
+mdls        =   range(5)
+
+OUT = {}
+for cell_index in mdls:
     
     parameters      =   model_sets[cell_index]['variables'] 
     rheobase        =   model_sets[cell_index]['rheobase']
@@ -41,7 +51,8 @@ for cell_index in range(34):
     Istim           = h.IClamp(0.5, sec=cell.soma)
     Istim.delay     =   100
     Istim.dur       =   1000
-    Istim.amp       =   (rheobase+60) *1e-3
+    randint         =   np.random.randint(60)
+    Istim.amp       =   (rheobase+randint) *1e-3
     
     # record vectors
     tm  = h.Vector()
@@ -56,9 +67,14 @@ for cell_index in range(34):
     while h.t < 1000:
         h.fadvance()
     
-    plt.plot(tm,vm)
-    plt.title('model v: %d; rheobase: %d' % (cell_index, rheobase))
-    #plt.savefig('model_%02d.png' %(cell_index), format='png')
-    plt.show()
+    OUT[cell_index] = {'tm':tm.to_python(), 'vm':vm.to_python, 'rheo':rheobase}
+    
+
+# plot
+for cell_index in OUT:       
+    plt.plot(OUT[cell_index]['tm'], OUT[cell_index]['vm'], \
+        label='mdl:{} rhb:{:.0f}'.format(cell_index,OUT[cell_index]['rheo']))
+plt.legend()
+plt.show()
         
 
