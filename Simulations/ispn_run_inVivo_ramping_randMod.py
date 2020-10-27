@@ -21,9 +21,14 @@ h.load_file('import3d.hoc')
 pc = h.ParallelContext()
 id = int(pc.id())
 
-from mpi4py import MPI
-comm = MPI.COMM_WORLD
-rank = comm.Get_rank()
+try:
+    from mpi4py import MPI
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+except:
+    print('-----------------------------')
+    print('Failed to import mpi4py!\n rank is set to 0\n parallell simulation will not work!!!')
+    rank = 0
 
 # ----------------------------------------------------------------------------------------
 

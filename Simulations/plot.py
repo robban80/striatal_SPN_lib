@@ -24,21 +24,39 @@ minT        = 0
 path2traces = 'Results/'
 
 
+'''Check if directory exists, if not, create it'''
+import os
+MYDIR = ("Figures")
+print("checking if folder:", MYDIR, "exists...")
+CHECK_FOLDER = os.path.isdir(MYDIR)
+
+# If folder doesn't exist, then create it.
+if not CHECK_FOLDER:
+    os.makedirs(MYDIR)
+    print("\t", MYDIR, " not found. Creating!")
+else:
+    print("\t", MYDIR, "->exists.")
+
+
 
 def run():
-    
+    # below two functions are used to inspect the data -> it is not producing panels for the paper. 
     #plot_all_traces()
     #find_example_traces_ispn()
-    fi_curve()                                      # plots panel 6A1 in Lindroos and Hellgren Kotaleski (2020?) 
+    #------------------------------------------------
+    
+    fi_curve()                                      # plots panel 6A1 in Lindroos and Hellgren Kotaleski (2020) 
     bap()                                           # 6A2
-    '''plot_example_traces_ispn()                      # 6B1
+    
+    plot_example_traces_ispn()                      # 6B1
     ispn_plot_proportions(load=1)                   # 6B2
     ispn_plot_proportions_nafNMDA(load=1)           # 6C1-2
     ispn_plot_cs_factors(load=1)                    # 6C3
-    #ispn_plot_proportions_nafNMDA_DA(load=1)'''
+    
+    plt.show()
  
  
- # --------------------------------------------------------------------------------------------------------------
+ # ---------------------------------------------------------------------------------
  
 def unserialize_from_json(name, mod=1):
     '''
@@ -348,10 +366,14 @@ def ispn_plot_cs_factors(load=0):
             a.plot([1,1],[0,y[3]], 'lightgrey', lw=2)
             a.fill_between([1,x1],[y[3],y[3]],[0,0], color='lightgrey')
         
-        if not c == 'range':
+        if c == 'nafNMDA':
+            a1.set_title('panel 6c3, left (f-naf)')
+            a2.set_title('panel 6c3, right (f-NMDA)')
             f1.savefig('Figures/ispn_cs_factors_{}_naf.png'.format(c),  dpi=300, transparent=True)
             f2.savefig('Figures/ispn_cs_factors_{}_nmda.png'.format(c), dpi=300, transparent=True) 
-            
+        else:
+            plt.close(f1)
+            plt.close(f2)
 
 
 
@@ -417,7 +439,7 @@ def ispn_plot_proportions(load=0):
         
         for st,a,n in zip([ns,cs],[a1,a2],['reg','cs']):
             height = 100*st/tot
-            print(cond, n, height)
+            #print(cond, n, height)
             n1,b1,p1 = a.hist([0,1,2,3], bins=4, color=colors[cond])
             for j,p in enumerate(p1):
                 if j==i:
@@ -431,9 +453,11 @@ def ispn_plot_proportions(load=0):
         a.plot([0,3],[100,100],'lightgrey',lw=1)
         a.set_ylim([-2,102])
         a.axis('off')
+    a1.set_title('panel 6b2')
+    a2.set_title('no cs. in data. panel not in paper')
     f1.savefig('Figures/ispn_proportion_spiking_range.png', dpi=300, transparent=True)
     f2.savefig('Figures/ispn_proportion_cs_range.png', dpi=300, transparent=True)
-    plt.show()
+    #plt.show()
 
 
 def ispn_plot_proportions_nafNMDA(load=0):
@@ -504,7 +528,7 @@ def ispn_plot_proportions_nafNMDA(load=0):
         
         for st,a,n,w in zip([ns,cs],[a1,a2],['reg','cs'],[100,1000]):
             height = w*st/max(tot,1)    # avoid dev by zero for empty set...
-            print(cond, n, height)
+            #print(cond, n, height)
             n1,b1,p1 = a.hist([0,1,2,3], bins=4, color='grey', edgecolor='w', linewidth=1.2)
             for j,p in enumerate(p1):
                 if j==i:
@@ -518,9 +542,11 @@ def ispn_plot_proportions_nafNMDA(load=0):
         a.plot([0,3],[w,w],'lightgrey',lw=1)
         a.set_ylim([-2,w+2])
         a.axis('off')
+    a1.set_title('panel 6c1')
+    a2.set_title('panel 6c2')
     f1.savefig('Figures/ispn_proportion_spiking_nafNMDA.png', dpi=300, transparent=True)
     f2.savefig('Figures/ispn_proportion_cs_nafNMDA.png',      dpi=300, transparent=True)
-    plt.show()
+    #plt.show()
 
 def ispn_plot_proportions_nafNMDA_DA(load=0):
     '''same as ispn_plot_proportions_nafNMDA, but run under DA conditions (uniform modulation)
@@ -614,6 +640,11 @@ def plot_example_traces_ispn(ax=None):
        
        10 first traces under each condition are plotted
        setup: ispn bombarded with ramping synaptic input under concurrent neuromodulation
+       
+       might not reproduce exactly the panel 6B1, since there seems to be differences in how glob
+       orders files:
+            under Ubuntu 18.04 the panel 6B1 is produced, 
+            but under mac traces from different files are used. 
        '''
        
     if not ax: fig,ax = plt.subplots(1,1)
@@ -623,7 +654,7 @@ def plot_example_traces_ispn(ax=None):
     ntraces     = 10
     alpha       = 1
     
-    for c in ['ctrl','DA','ACh','ACh+DA']:
+    for c in ['DA','ACh','ctrl','ACh+DA']:
         count   = 0
         fstring = 'Results/inVivo_ramping_{}_*_model{}.json'.format(c,mid)
         files   =  glob.glob(fstring)
@@ -655,8 +686,9 @@ def plot_example_traces_ispn(ax=None):
     ax.plot([xbase,xbase+xlen], [ybase,ybase], 'k', lw=lw)
     ax.plot([xbase,xbase], [ybase+ylen,ybase], 'k', lw=lw)
     ax.axis('off')
+    ax.set_title('panel 6a2')
     fig.savefig('Figures/ispn_example_traces_in_range.png', dpi=300, transparent=True)
-    plt.show()
+    #plt.show()
 
    
 
