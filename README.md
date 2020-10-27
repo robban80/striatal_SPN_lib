@@ -25,8 +25,7 @@ Plotting subpanels
 
 The file Simulations/plot.py can be used to replot the panels of figure 6 in Lindroos & H.K. (2020).
 This is done using aggregated data (in .json files). The raw data will be uploaded to OSF:
-https://osf.io/
-LINK WILL BE UPDATED... ones I have gotten my psw reset...
+https://osf.io/wmsdj/
 
 To replot the data, do the following in a terminal:
 cd Simulations
@@ -50,6 +49,8 @@ NEURON+python: https://www.neuron.yale.edu/neuron/download
 python3
 mpi4py (to run in parallel)
 sys, numpy, json, pickle
+(some additional packages are requested by plot.py. Of these matplotlib
+is definitely needed, but the others can likely be commented)
 
 General (other models)
 ------------------------------------------------------------------------------
